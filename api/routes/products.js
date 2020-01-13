@@ -7,9 +7,25 @@ const productModel = require('../models/product');
 
 // product 불러오기
 router.get("/", (req, res) => {
-    res.status(200).json({
-        msg: "product success"
-    });
+
+    productModel
+        .find()
+        .then(docs => {
+            console.log(docs);
+            res.status(200).json({
+                dataNum: docs.length,
+                products: docs
+            });
+        })
+        .catch(err => {
+            console.log(err);
+            res.status(500).json({
+                error: err
+            });
+        });
+
+
+
 });
 
 // product 생성
