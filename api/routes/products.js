@@ -84,10 +84,31 @@ router.post("/", (req, res) => {
 
 
 // product 수정
-router.patch("/", (req, res) => {
-    res.status(200).json({
-        msg: "product patch success"
-    });
+router.patch("/:productID", (req, res) => {
+    const ID = req.params.productID;
+
+    const updateOps = {};
+    for (const ops of req.body){
+        updateOps[ops.props] = ops.value;
+    }
+
+
+
+    productModel
+        .findByIdAndUpdate(ID, { $set: updateOps})
+        .then(result => {
+            res.status(200).json({
+                msg: "updated",
+                productInfo: result
+            });
+        })
+        .catch(err => {
+            res.status(500).json({
+                error: err
+            });
+        });
+
+
 });
 
 // product 삭제
