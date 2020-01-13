@@ -8,8 +8,16 @@ router.get("/", (req, res) => {
 });
 
 router.post("/", (req, res) => {
+
+    const product = {
+        productName: req.body.name,
+        productPrice: req.body.price
+    };
+
+
     res.status(200).json({
-        msg: "product post success"
+        msg: "product post success",
+        productInfo: product
     });
 });
 

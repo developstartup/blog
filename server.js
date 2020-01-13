@@ -1,7 +1,8 @@
 const express = require('express');
 const app = express();
+const morgan = require("morgan");
 const mongoose = require('mongoose');
-
+const bodyparser = require('body-parser');
 
 const product_route = require('./api/routes/products');
 const order_route = require('./api/routes/order');
@@ -21,6 +22,9 @@ mongoose.connect(mongoDB_URL,
     .catch(err => console.log(err));
 
 
+app.use(morgan("dev"));
+app.use(bodyparser.json());
+app.use(bodyparser.urlencoded({ extended: false}));
 
 
 
