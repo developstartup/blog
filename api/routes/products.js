@@ -11,11 +11,21 @@ router.get("/", (req, res) => {
     productModel
         .find()
         .then(docs => {
-            console.log(docs);
-            res.status(200).json({
-                dataNum: docs.length,
-                products: docs
-            });
+            const response = {
+                count: docs.length,
+                products: docs.map(doc => {
+                    return{
+                        _id: doc._id,
+                        name: doc.name,
+                        price: doc.price,
+                        request: {
+                            type: "GET",
+                            url: "http://localhost:3000/product/" + doc._id
+                        }
+                    };
+                })
+            };
+            res.status(200).json(response);
         })
         .catch(err => {
             console.log(err);
@@ -41,8 +51,14 @@ router.get("/:productID", (req, res) => {
                 });
             } else {
                 res.status(200).json({
-                    productInfo: doc
-                })
+                    _id: doc._id,
+                    name: doc.name,
+                    price: doc.price,
+                    request: {
+                        type: "GET",
+                        url: "http://localhost:3000/product"
+                    }
+                });
             }
         })
         .catch(err => {
@@ -77,9 +93,6 @@ router.post("/", (req, res) => {
                 error: err
             });
         });
-
-
-
 });
 
 
@@ -92,14 +105,16 @@ router.patch("/:productID", (req, res) => {
         updateOps[ops.props] = ops.value;
     }
 
-
-
     productModel
-        .findByIdAndUpdate(ID, { $set: updateOps})
+        .update({_id: ID}, {$set: updateOps})
+        .exec()
         .then(result => {
             res.status(200).json({
                 msg: "updated",
-                productInfo: result
+                request: {
+                    type: "GET",
+                    url: "http://localhost:3000/product"
+                }
             });
         })
         .catch(err => {
@@ -107,8 +122,6 @@ router.patch("/:productID", (req, res) => {
                 error: err
             });
         });
-
-
 });
 
 // product 삭제
@@ -123,8 +136,12 @@ router.delete("/:productID", (req, res) => {
             })
         } else {
             res.status(200).json({
-                msg: "Deleted"
-            })
+                msg: "Deleted",
+                request: {
+                    type: "GET",
+                    url: "http://localhost:3000/product"
+                }
+            });
         }
     })
     .catch(err => {
