@@ -5,7 +5,7 @@ const productModel = require('../models/product');
 
 
 
-// product 불러오기
+// total product 불러오기
 router.get("/", (req, res) => {
 
     productModel
@@ -27,6 +27,31 @@ router.get("/", (req, res) => {
 
 
 });
+
+
+// 상세 product 불러오기
+router.get("/:productID", (req, res) => {
+    const ID = req.params.productID;
+    productModel
+        .findById(ID)
+        .then(doc => {
+            if (!doc) {
+                res.status(404).json({
+                    msg: "No product"
+                });
+            } else {
+                res.status(200).json({
+                    productInfo: doc
+                })
+            }
+        })
+        .catch(err => {
+            res.status(500).json({
+                error: err
+            });
+        });
+});
+
 
 // product 생성
 router.post("/", (req, res) => {
@@ -66,10 +91,27 @@ router.patch("/", (req, res) => {
 });
 
 // product 삭제
-router.delete("/", (req, res) => {
-    res.status(200).json({
-        msg: "product delete success"
-    });
+router.delete("/:productID", (req, res) => {
+    const ID = req.params.productID;
+    productModel
+    .findByIdAndRemove(ID)
+    .then(doc => {
+        if (!doc) {
+            res.status(404).json({
+                msg: "No product"
+            })
+        } else {
+            res.status(200).json({
+                msg: "Deleted"
+            })
+        }
+    })
+    .catch(err => {
+        res.status(500).json({
+            error: err
+        });
+    }
+    );
 });
 
 module.exports = router;
